@@ -1,0 +1,212 @@
+---
+title: It's Getting *Hot* in Here
+subtitle: Analysis of Global CO2 Emissions Over Time
+author: Impressive Squirtle <br> Cassidy Cheesman, Joanne Wang, Ming DeMers, Elisabeth Pan, and Ivan Lin
+date: 5/5/23
+format: 
+  revealjs:
+    smaller: true
+editor: visual
+execute:
+  echo: false
+---
+
+## Topic and Motivation
+
+-   Climate change is the biggest challenge facing our generation, with increased global CO2 emissions being one of the leading contributors to this issue.
+
+-   In order to combat the effects of climate change, we must first understand the data behind it.
+
+-   Research questions:
+
+    -   What is the relationship between GDP and CO2 emissions for developing versus developed countries in 2018?
+
+    -   Is the true proportion of countries with a CO2 emission greater than the US in the twentieth century different from those in the twenty-first century?
+
+## The Data
+
+-   Created to show how emissions are changing in each country
+
+-   The Our World in Data team created the original dataset on behalf of the Our World in Data project
+
+-   The instances that comprise the dataset represent countries (per year from 1992 to 2018) with 2484 instances total.
+
+-   The observations (rows) are countries per year and the attributes (columns) are various emission data for each country per year
+
+-   The current dataset we will use is a subset of the original dataset, with all the tonnes units converted into kilotons and the variable names altered
+
+## Highlights from the EDA
+
+```{r}
+#| label: load-pkgs
+#| message: false
+
+library(tidyverse)
+library(tidymodels)
+library(skimr)
+library(rcis)
+```
+
+```{r}
+#| label: read-csv-glimpse
+
+pollution <- read_csv("data/global_emissions.csv")
+```
+
+::: columns
+::: {.column width="33%"}
+```{r}
+#| label: gdp-developed
+#visualizing change in GDP over time for a developed country
+pollution_usa <- pollution |>
+  filter(Country.Name == "United States")
+
+ggplot(data = pollution_usa, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in USA", 
+    x = "Year",
+    y = "GDP (international$)"
+  )
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+#| label: gdp-developing
+#visualizing change in GDP over time for a developing country
+pollution_pakistan <- pollution |>
+  filter(Country.Name == "Pakistan")
+
+ggplot(data = pollution_pakistan, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in Pakistan", 
+    x = "Year",
+    y = "GDP (international$)"
+  ) 
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+#| label: CO2-developed
+#visualizing change in CO2 emissions over time for a developed country
+ggplot(data = pollution_usa, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in USA", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+```
+:::
+:::
+
+::: columns
+::: {.column width="33%"}
+```{r}
+#| label: CO2-developing
+#visualizing change in CO2 emissions over time for a developing country
+ggplot(data = pollution_pakistan, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in Pakistan", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+#| label: gdp-CO2-1992
+#visualizing relationship between GDP and total CO2 emissions in 1992
+pollution_92 <- pollution |>
+  filter(Year == 1992)
+
+ggplot(data = pollution_92,
+       mapping = aes(x = Country.GDP, y = Emissions.Production.CO2.Total)
+       ) + 
+  geom_point(alpha = 0.5) + 
+  xlim(0, 3e+12) + 
+  ylim(0, 2000) + 
+  theme_minimal() + 
+  labs(
+    title = "Total CO2 Emissions vs. Country GDP in 1992", 
+    x = "GDP (international$)",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+```
+:::
+
+::: {.column width="33%"}
+```{r}
+#| label: gdp-CO2-2018
+#visualizing relationship between GDP and total CO2 emissions in 2018
+pollution_18 <- pollution |>
+  filter(Year == 2018)
+
+ggplot(data = pollution_18,
+       mapping = aes(x = Country.GDP, y = Emissions.Production.CO2.Total)
+       ) + 
+  geom_point(alpha = 0.5) + 
+  xlim(0, 4e+12) + 
+  ylim(0, 2000) + 
+  theme_minimal() + 
+  labs(
+    title = "Total CO2 Emissions vs. Country GDP in 2018", 
+    x = "GDP (international$)",
+    y = "Total CO2 Emissions (kilotons)"
+  )
+```
+:::
+:::
+
+## Inference, Modeling, and Analysis {.smaller}
+
+Research question: What is the association between GDP and CO2 emissions for developing versus developed countries in 2018?
+
+```{r}
+developed_countries <- c(
+  "Austria", "Belgium", "Denmark", "Finland", "France", "Germany", "Greece", "Ireland", "Italy", "Luxembourg", "Netherlands", "Portugal", "Spain", "Sweden", "United Kingdom", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Estonia", "Hungary", "Latvia", "Lithuania", "Malta", "Poland", "Romania", "Slovakia", "Slovenia", "Iceland", "Norway", "Switzerland", "Australia", "Canada", "Japan", "New Zealand", "United States"
+  )
+
+pollution_18 <- pollution_18 |>
+  mutate(developed = if_else(Country.Name %in% developed_countries, "Yes", "No"),
+         developed = factor(developed))
+
+log_fit <- logistic_reg() |>
+  fit(developed ~ Emissions.Production.CO2.Total, data = pollution_18)
+
+tidy(log_fit)
+
+```
+
+$$ log(\frac{p}{1-p})=-5.14 \times 10^{-1} +(- 5.69 \times 10^{-5} \times total~CO2~emissions) $$ The intercept can be interpreted as the log odds of a country being "developed" if total CO2 emissions is 0, which is $-5.14 \times 10^{-1}$. However, because we do not use or think in terms of log odds, we can further interpret this intercept by evaluating p. The odds, $\frac {p}{1-p}$, of a country being "developed" if total CO2 emissions is 0 is $e ^ {-5.14 \times 10 ^ {-1}}$ which is 0.598, where p represents the probability that the country is developed. Thus, given that total CO2 emissions is 0, the probability a country is developed is $e ^ {-5.14 \times 10 ^ {-1}} - e ^ {-5.14 \times 10 ^{-1}} p$ or 0.37.
+
+##  {background-video="recorded-slide.mp4"}
+
+## Conclusions and Future Work
+
+-   We find that there is indeed an increase in CO2 emissions between the two centuries
+
+-   For developing countries, a near-exponential increase
+
+-   For developed countries, a linear increase.
+
+-   This requires transitioning to renewable energy sources, improving energy efficiency, reducing deforestation, and promoting reforestation and eco-repair.
+
+-   Not all 195 countries, nor only 1992 - 2018.
+
+-   In the future, we hope to explore a larger time frame, and examine more features than just GDP, such as population, industrialization, number of cities, etc.
+
+-   Developing or developed, every nation has a duty to help protect and preserve the planet in which we all reside.

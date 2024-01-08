@@ -1,0 +1,291 @@
+---
+title: "Project title"
+subtitle: "Exploratory data analysis"
+format: html
+editor: visual
+execute:
+  echo: true
+---
+
+```{r}
+#| label: load-pkgs
+#| message: false
+
+library(tidyverse)
+library(skimr)
+```
+
+# Research question(s)
+
+Research question(s). State your research question (s) clearly.
+
+-   How do changes in GDP for developing versus developed countries correlate to their global CO2 emissions
+
+    -   Using the definition of developing versus devleoped countries as defined by the United Nations:
+
+        https://www.un.org/en/development/desa/policy/wesp/wesp_current/2014wesp_country_classification.pdf
+
+-   In 2018, how do different countries' GDP correlate to their global CO2 emissions?
+
+-   In 1992, how different countries' GDP correlate to their global CO2 emissions?
+
+# Data collection and cleaning
+
+Have an initial draft of your data cleaning appendix. Document every step that takes your raw data file(s) and turns it into the analysis-ready data set that you would submit with your final project. Include text narrative describing your data collection (downloading, scraping, surveys, etc) and any additional data curation/cleaning (merging data frames, filtering, transformations of variables, etc). Include code for data curation/cleaning, but not collection.
+
+```{r}
+#| label: read-csv-glimpse
+
+pollution <- read_csv("data/global_emissions.csv")
+glimpse(pollution)
+
+```
+
+This data was initally found on the CORGIS Datasets Project website. We first narrowed our search by csv files for convenience, then decided upon the global emissions data found on this page:
+
+https://corgis-edu.github.io/corgis/csv/global_emissions/
+
+From the website we downloaded the file "global_emissions.csv".
+
+The data needed no further tidying/cleaning as it is already in the proper format with one column per variable, one row per observation, and once cell per value.
+
+# Data description
+
+Have an initial draft of your data description section. Your data description should be about your analysis-ready data.
+
+### Motivation
+
+-   **For what purpose was the dataset created?**
+
+    -   The dataset was created to show how emissions are changing in each country and allows for comparisons of various countries and regions in relation to overall emission trends along with their sources.
+
+-   **Who created the dataset (e.g., which team, research group) and on behalf of which entity (e.g., company, institution, organization)?**
+
+    -   The Our World in Data team created the original dataset on behalf of the Our World in Data project, which is a project of the Global Change Data Lab (a non-profit organization based in the United Kingdom), and the current dataset we will be using is a subset from the original dataset from the CORGIS Dataset Project created by Sam Donald.
+
+-   **Who funded the creation of the dataset?**
+
+    -   The Global Change Data Lab funded the creation of the dataset and it is a registered charity in England and Wales. Their work is made possible by donations of individuals and organizations that have made contributions to support their project.
+
+### Composition
+
+-   **What do the instances that comprise the dataset represent (e.g., documents, photos, people, countries)?**
+
+    -   The instances that comprise the dataset represent countries (per year from 1992 to 2018).
+
+-   **How many instances are there in total (of each type, if appropriate)?**
+
+    -   There are 2484 instances total.
+
+-   **What are the observations (rows) and the attributes (columns)?**
+
+    -   The observations (rows) are countries per year.
+
+    -   The attributes (columns) are year, country name, country code, country GDP, country population, emissions production CH4, emissions production N2O, emissions production CO2 cement, emissions production CO2 coal, emissions production CO2 gas, emissions production CO2 oil, emissions production CO2 flaring, emissions production CO2 other, emissions production CO2 total, emissions global share CO2 cement, emissions global share CO2 coal, emissions global share CO2 gas, emissions global share CO2 oil, emissions global share CO2 flaring, emissions global share CO2 total.
+
+### Collection Process
+
+-   **How was the data associated with each instance acquired?**
+
+    -   The original dataset is built upon a number of datasets and processing steps. The datasets that were processed include Statistical review of world energy (BP), International energy data (EIA), Primary energy consumption (Our World in Data based on BP's Statistical review of world energy & EIA's International energy data), Global carbon budget - Fossil CO2 emissions (Global Carbon Project), Global carbon budget - Global carbon emissions (Global Carbon Project), Global carbon budget - National fossil carbon emissions (Global Carbon Project), Global carbon budget - National land-use change carbon emissions (Global Carbon Project), Global carbon budget (Our World in Data based on the Global Carbon Project's Fossil CO2 emissions, Global carbon emissions, National fossil carbon emissions, and National land-use change emissions), Greenhouse gas emissions (including methane and nitrous oxide) by sector (CAIT), CO2 dataset (Our World in Data based on all sources above), Population (Our World in Data based on [a number of different sources](https://ourworldindata.org/population-sources)), and GDP (University of Groningen GGDC's Maddison Project Database, Bolt and van Zanden, 2020). The current dataset we are using extracts from the original dataset.
+
+-   **What processes might have influenced what data was observed and recorded and what was not?**
+
+    -   The current dataset we will use depends on the datasets it was built off of and how they were processed, so if certain countries or emission data were left out of those datasets, they will also be left out of our dataset.
+
+-   **If people are involved, were they aware of the data collection and if so, what purpose did they expect the data to be used for?**
+
+    -   There were no people involved in the dataset.
+
+### Preprocessing/cleaning/labeling
+
+-   **What preprocessing was done, and how did the data come to be in the form that you are using?**
+
+    -   The various datasets that were the foundation for the original dataset underwent processing steps (the codes of which can be found at this website, https://github.com/owid/co2-data), the names of countries and regions were standardized, the carbon emissions were recalculated to CO2 (e.g. from tonnes of carbon to tonnes of CO2 using a conversion factor of 3.664), and per capita figures were calculated from the dataset's "Population" metric, which is included in the complete dataset and the population figures were sourced from Gapminder and the UN World Population Prospects (UNWPP).
+    -   The current dataset we will use is a subset of the original dataset, with all the tonnes units converted into kilotons and the variable names altered.
+
+-   **Is the software that was used to preprocess/clean/label the data available?**
+
+    -   The link for the software and code that was used to preprocess/clean/label the data: https://github.com/owid/co2-data
+
+# **Data limitations**
+
+Identify any potential problems with your dataset.
+
+-   Not all 195 countries are in our dataset, which limits the scope of our dataset a bit.
+
+-   The years within the dataset only range from 1992 to 2018, which could be a limitation because the range is 26 years, which may or may not be a long enough time period to see substantive changes in GDP or CO2 emissions. Additionally, this dataset does not contain data for more recent years, which could be another limitation if we want to see the most up-to-date data on GDP/emissions for different countries.
+
+# Exploratory data analysis
+
+Perform an (initial) exploratory data analysis.
+
+```{r}
+#| label: initial-exploratory-data-analysis
+
+#average GDP of countries
+pollution |>
+  group_by(Country.Name) |>
+  summarize(mean = mean(Country.GDP))
+
+#average total CO2 emissions of countries 
+pollution |>
+  group_by(Country.Name) |>
+  summarize(mean = mean(Emissions.Production.CO2.Total))
+
+#visualizing change in GDP over time for a developed country
+pollution_usa <- pollution |>
+  filter(Country.Name == "United States")
+
+ggplot(data = pollution_usa, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in USA", 
+    x = "Year",
+    y = "GDP (international$)"
+  ) 
+
+#visualizing change in GDP over time for another developed country
+pollution_japan <- pollution |>
+  filter(Country.Name == "Japan")
+
+ggplot(data = pollution_japan, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in Japan", 
+    x = "Year",
+    y = "GDP (international$)"
+  ) 
+
+#visualizing change in GDP over time for a developing country
+pollution_pakistan <- pollution |>
+  filter(Country.Name == "Pakistan")
+
+ggplot(data = pollution_pakistan, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in Pakistan", 
+    x = "Year",
+    y = "GDP (international$)"
+  ) 
+
+#visualizing change in GDP over time for another developing country
+pollution_vietnam <- pollution |>
+  filter(Country.Name == "Vietnam")
+
+ggplot(data = pollution_vietnam, mapping = aes(x = Year, y = Country.GDP)) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "GDP Change Over Time in Vietnam", 
+    x = "Year",
+    y = "GDP (international$)"
+  ) 
+
+#visualizing change in CO2 emissions over time for a developed country
+ggplot(data = pollution_usa, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in USA", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+
+#visualizing change in CO2 emissions over time for another developed country
+ggplot(data = pollution_japan, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in Japan", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+
+#visualizing change in CO2 emissions over time for a developing country
+ggplot(data = pollution_pakistan, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in Pakistan", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+
+#visualizing change in CO2 emissions over time for another developing country
+ggplot(data = pollution_vietnam, 
+       mapping = aes(x = Year, y = Emissions.Production.CO2.Total)
+       ) +
+  geom_col() + 
+  theme_minimal() +
+  labs(
+    title = "CO2 Emissions Change Over Time in Vietnam", 
+    x = "Year",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+
+#visualizing relationship between GDP and total CO2 emissions in 2018
+pollution_18 <- pollution |>
+  filter(Year == 2018)
+
+ggplot(data = pollution_18,
+       mapping = aes(x = Country.GDP, y = Emissions.Production.CO2.Total)
+       ) + 
+  geom_point(alpha = 0.5) + 
+  xlim(0, 4e+12) + 
+  ylim(0, 2000) + 
+  theme_minimal() + 
+  labs(
+    title = "Total CO2 Emissions vs. Country GDP in 2018", 
+    x = "GDP (international$)",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+
+#visualizing relationship between GDP and total CO2 emissions in 1992
+pollution_92 <- pollution |>
+  filter(Year == 1992)
+
+ggplot(data = pollution_92,
+       mapping = aes(x = Country.GDP, y = Emissions.Production.CO2.Total)
+       ) + 
+  geom_point(alpha = 0.5) + 
+  xlim(0, 3e+12) + 
+  ylim(0, 2000) + 
+  theme_minimal() + 
+  labs(
+    title = "Total CO2 Emissions vs. Country GDP in 1992", 
+    x = "GDP (international$)",
+    y = "Total CO2 Emissions (kilotons)"
+  ) 
+```
+
+The average GDP for all countries (between 1992 and 2018) in the dataset were calculated and can be found in the displayed tibble.
+
+The average total CO2 emissions for all countries (between 1992 and 2018) in the dataset were calculated and can be found in the second displayed tibble.
+
+Through visualizing the change in GDP over time for the two developed (United States and Japan) countries and the two developing countries (Pakistan and Vietnam), it can be seen that it appears that developing countries have a much higher rate of increase in GDP over time than developed countries do. However, as expected, the developing countries have much lower GDPs than developed countries in general.
+
+Through visualizing the change in total CO2 emissions over time for the two developed (United States and Japan) countries and the two developing countries (Pakistan and Vietnam), it can be seen that it appears that developing countries have a much higher rate of increase in total CO2 emissions over time than developed countries do. Additionally, developed countries' total CO2 emissions don't appear to vary too much over the years, staying at a relatively high emission rate. Furthermore, as expected, despite higher rates of increase in the total CO2 emissions over time for developing countries, developed countries tend to have much higher total CO2 emissions overall than developing countries.
+
+The observations above could indicate a possible correlation between GDP growth and an increase in CO2 emissions. It could also indicate that developed countries tend to produce much more CO2 than developing countries, contributing much more to climate change, but that there is a upward trend in development in developing countries that is also increasing CO2 emissions.
+
+The graphs of "Total CO2 Emissions vs. Country GDP in 2018" and "Total CO2 Emissions vs. Country GDP in 1992" demonstrate a potential positive linear relationship between GDP and total CO2 emissions for the different countries across the years of 1992 to 2018.
+
+# Questions for reviewers
+
+List specific questions for your peer reviewers and project mentor to answer in giving you feedback on this phase.
+
+-   Do we need to convert the names of the variables/columns in the dataset to have underscores and all lowercase letters like the variables we usually use, or is it okay to leave them as is.
+
+-   Is the 2014 definition of what a developed vs developing country is as defined by the United Nations not recent enough of a definition?
+
+-   Are our research questions interesting enough/feasible?

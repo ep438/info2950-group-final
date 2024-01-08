@@ -1,0 +1,154 @@
+---
+title: "Project title"
+subtitle: "Proposal"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-pkgs
+#| message: false
+
+library(tidyverse)
+library(skimr)
+```
+
+# Data 1
+
+-   Identify the source of the data.
+
+    The source of the data is the Stanford Open Policing Project, which records and tabulates police stops of cities and counties in the United States.
+
+-   State when and how it was originally collected (by the original data curator, not necessarily how you found the data).
+
+    The data is collected, by request, from police departments in every state. They started collecting in 2015.
+
+-   Write a brief description of the observations.
+
+    There are numerous observations, including the date of the stop, the biographical information of the stopped, whether a search was conducted, if arrests were made, and reason for stop. Not all data sets contain this information, as different police departments provided varying level of information. We have chosen to select all the findings of just one state, California.
+
+## Research question
+
+-   A well formulated research question. (You may include more than one research question if you want to receive feedback on different ideas for your project. However, one per data set is required.)
+
+    In California, who is most likely to be stopped by police, what about at night? What is the most prevalent reasoning for stopping per race, by jurisdiction? What is the per capital rate for pulling individuals over? Do certain biographical features lead to more frisks, searches, or arrests?
+
+-   A description of the research topic along with a concise statement of your hypotheses on this topic.
+
+    We intend to study if race, gender, age, are correlated with stops, and subsequent searches, frisks, or arrests.
+
+    Out hypothesis is that certain races and ages will experience more stops, and that they will also experience more subsequent actions.
+
+-   Identify the types of variables in your research question. Categorical? Quantitative?
+
+    Stop date and time is quantitative. Reason for stop, search conducted, frisk performed, and arrest made are categorical.
+
+## Glimpse of data
+
+```{r}
+#| label: load-data-1
+
+# example of the san diego dataset
+
+sandiego <- read.csv("data/ca_san_diego_2020_04_01.csv")
+
+skim(sandiego)
+```
+
+# Data 2
+
+## Introduction and data
+
+-   Identify the source of the data.
+
+    The data's source is from the website data.austintexas.gov. The data is collected from the Austin Animal Center.
+
+-   State when and how it was originally collected (by the original data curator, not necessarily how you found the data).
+
+    The data was originally created on February 5, 2016. It was originally collected by recording, upon intake of each animal, their unique given Animal ID, name (if they have one), physical characteristics, and then each animal's outcome type was recorded, along with the date of their outcome and age upon outcome.
+
+-   Write a brief description of the observations.
+
+    The observations are one outcome per animal per encounter, which includes their Animal ID, their Name (if they have one), the date of their outcome, their date of birth, their outcome type, the type of animal they are, their sex upon outcome, their age upon outcome, their breed, and their color.
+
+## Research question
+
+-   A well formulated research question. (You may include more than one research question if you want to receive feedback on different ideas for your project. However, one per data set is required.)
+
+    1.) Does the type of animal have an impact on the likelihood of adoption being the outcome?
+
+    2.) Does the breed of animal have an impact on the likelihood of euthanasia being the outcome?
+
+    3.) What is the relationship between animal age and their outcome?
+
+-   A description of the research topic along with a concise statement of your hypotheses on this topic.
+
+    We would like to research how different animal characteristics impact their outcomes. Our hypotheses are:
+
+    1.) The type of animal does have an impact on the likelihood of adoption being the outcome, with Cats and Dogs being the two animal types with the highest probability of adoption.
+
+    2.) The breed of animal does have an impact on the likelihood of euthanasia being the outcome, with breeds that are considered more aggressive and violent having higher rates of euthanasia than other breeds.
+
+    3.) As age increases, the likelihood of adoption will decrease and the likelihood of euthanasia will increase.
+
+-   Identify the types of variables in your research question. Categorical? Quantitative?
+
+    Categorical variables: Outcome Type, Outcome Subtype, Animal Type, Sex upon Outcome, Breed, and Color
+
+    Quantitative variable: Age upon Outcome
+
+## Glimpse of data
+
+```{r}
+#| label: load-data-2
+
+# add code here
+animal_center_outcomes <- read_csv("data/Austin_Animal_Center_Outcomes .csv", skip = 1)
+
+animal_center_outcomes
+
+glimpse(animal_center_outcomes)
+```
+
+# Data 3
+
+## Introduction and data
+
+-   Identify the source of the data.
+
+    Our World In Data, CO₂ and Greenhouse Gas Emissions by Hannah Ritchie, Max Roser and Pablo Rosado.
+
+-   State when and how it was originally collected (by the original data curator, not necessarily how you found the data).
+
+    The data set was first made available on 8/7/2020 and was collected by taking data from a number of other data sets including but not limited to the Statistical review of world energy (from BP), International energy data (from EIA), and Global carbon budget - Fossil CO2 emissions (from Global Carbon Project).
+
+-   Write a brief description of the observations.
+
+    The observations are the CO2, CH4, and NO2 produced from various industries, the GDP, and the populations per country per year.
+
+## Research question
+
+-   A well formulated research question. (You may include more than one research question if you want to receive feedback on different ideas for your project. However, one per data set is required.)
+
+    1\) Choose a country from each continent. For each country, how has the total amount of CO2 emissions changed over time?
+
+    2\) How does the change in GDP affect the total CO2 emissions of a country?
+
+-   A description of the research topic along with a concise statement of your hypotheses on this topic.
+
+    We want to research the changes in global CO2 emissions and change over time or in accordance to changes in a country's GDP. Specifically, we want to examine how global CO2 emissions may be different for countries in different parts of the world.
+
+-   Identify the types of variables in your research question. Categorical? Quantitative?
+
+    Quantitative variables (emissions, GDP)
+
+    Categorical variables (country)
+
+## Glimpse of data
+
+```{r}
+#| label: load-data-3
+
+pollution <- read_csv("data/global_emissions.csv")
+glimpse(pollution)
+```

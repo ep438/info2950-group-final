@@ -1,0 +1,13 @@
+---
+title: "About"
+format: html
+editor: visual
+---
+
+This project was developed by **\[Toto\]** For [INFO 2950: Introduction to Data Science](https://info2950.infosci.cornell.edu) at Cornell University. The team is comprised of the following team members.
+
+-   Joanne Wang: Junior Biochemistry major and Data Science minor in the College of Arts and Sciences.
+-   Elisabeth Pan: Sophomore Information Science major concentrating in Data Science in the College of Agriculture and Life Sciences.
+-   Ivan Lin: Sophomore Information Science major concentrating in Data Science and Minoring in Business in the College of Arts and Sciences.
+-   Ming DeMers: Sophomore Information Science and English major in the College of Arts and Sciences.
+-   Cassidy Cheesman: Junior Information Science major and Asian Studies minor in the College of Arts and Sciences.

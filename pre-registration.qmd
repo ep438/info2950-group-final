@@ -1,0 +1,18 @@
+---
+title: "Project title"
+subtitle: "Preregistration of analyses"
+format: html
+editor: visual
+execute:
+  echo: true
+---
+
+# Analysis #1
+
+In this analysis, we intend to explore how global CO2 emissions correlate with the GDP growth rate for developing versus developed countries. Our analysis will use linear regression to model the relationship between GDP growth rate and global CO2 emissions. Examining the latest year, 2018, we will conduct a correlation test between CO2, the explanatory variable, and GDP, the response variable of the country groups. We would report the regression coefficient and R2 value and include visualizations of the relationship between the two variables. Regardless of correlation, we will include the findings in the final report.
+
+# Analysis #2
+
+In this analysis, we aim to investigate the differences in CO2 production between the first year data was available (1992) and the most recent year data was available (2018) for a certain country. In this analysis, we will perform a Null Hypothesis test where Ho = 𝜇1 - 𝜇2 = 0 and HA = 𝜇1 - 𝜇2 ≠ 0 with the significance level being p \< 0.05 where 𝜇1 represents the average CO2 emissions for a certain country in 1992 and 𝜇2 represents the average CO2 emissions of a certain country in 2018. The response variable will be CO2 emissions corresponding to the years between 1992 and 2018. We will report the confidence interval and the p-value, as well as include visualizations of the relationship between time and CO2. Regardless of the outcome, we will include the findings in our final report.
+
+\
